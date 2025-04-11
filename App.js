@@ -1,115 +1,242 @@
-import React from 'react';
-import { ScrollView, View, Text, Image, StyleSheet } from 'react-native';
+import React, { useState } from 'react';
+import {
+  View,
+  Text,
+  Image,
+  ScrollView,
+  StyleSheet,
+  ActivityIndicator,
+  Modal,
+  TouchableOpacity,
+  Pressable,
+} from 'react-native';
 import { useFonts } from 'expo-font';
 
-const artistas = [
-  {
-    nome: 'Frida Kahlo',
-    nascimento: '6 de julho de 1907 – 13 de julho de 1954',
-    movimento: 'Surrealismo e Realismo Mágico',
-    tecnica: 'Pintura a óleo',
-    resumo: 'Frida Kahlo foi uma das artistas mais marcantes do século XX. Sua obra é profundamente pessoal e reflete temas como dor, identidade, política e feminilidade. Após um acidente grave na juventude, passou longos períodos em recuperação, o que influenciou sua arte de maneira intensa e autobiográfica.',
-    imagem: require('./assets/retrato1.jpg'),
-  },
-  {
-    nome: 'Leonardo da Vinci',
-    nascimento: '15 de abril de 1452 – 2 de maio de 1519',
-    movimento: 'Renascimento',
-    tecnica: 'Têmpera e óleo sobre madeira',
-    resumo: 'Leonardo foi um verdadeiro polímata: pintor, escultor, inventor, cientista e anatomista. Sua obra mais famosa, "Mona Lisa", é um ícone da arte ocidental. Sua genialidade é lembrada não apenas pela arte, mas também pelas inovações e estudos em diversas áreas do conhecimento.',
-    imagem: require('./assets/retrato2.jpg'),
-  },
-  {
-    nome: 'Salvador Dalí',
-    nascimento: '11 de maio de 1904 – 23 de janeiro de 1989',
-    movimento: 'Surrealismo',
-    tecnica: 'Óleo sobre tela',
-    resumo: 'Dalí foi conhecido tanto por sua arte provocativa quanto por sua personalidade excêntrica. Suas obras frequentemente exploram o inconsciente, o sonho e o tempo, com símbolos como relógios derretendo. Ele revolucionou o surrealismo com sua técnica meticulosa e imaginação sem limites.',
-    imagem: require('./assets/retrato3.jpg'),
-  },
-  {
-    nome: 'Claude Monet',
-    nascimento: '14 de novembro de 1840 – 5 de dezembro de 1926',
-    movimento: 'Impressionismo',
-    tecnica: 'Óleo sobre tela',
-    resumo: 'Monet foi um dos fundadores do impressionismo. Sua série de pinturas sobre as Ninfeias e a Catedral de Rouen demonstram seu fascínio pela luz e pelo tempo. A busca pela representação da impressão visual de momentos tornou sua arte um marco na transição para a arte moderna.',
-    imagem: require('./assets/retrato4.jpg'),
-  },
-  {
-    nome: 'Vincent van Gogh',
-    nascimento: '30 de março de 1853 – 29 de julho de 1890',
-    movimento: 'Pós-impressionismo',
-    tecnica: 'Óleo sobre tela com pinceladas marcadas',
-    resumo: 'Van Gogh é hoje um dos pintores mais admirados do mundo, embora tenha sido pouco reconhecido em vida. Suas obras vibrantes, como "Noite Estrelada" e "Girassóis", expressam emoções intensas. Lutou com doenças mentais, o que impactou sua vida e produção artística.',
-    imagem: require('./assets/retrato5.jpg'),
-  },
-  {
-    nome: 'Francisco de Goya',
-    nascimento: '30 de março de 1746 – 16 de abril de 1828',
-    movimento: 'Romantismo',
-    tecnica: 'Pintura a óleo e gravura',
-    resumo: 'Goya foi um dos pintores mais importantes da Espanha. Inicialmente conhecido por retratar a aristocracia, sua obra evoluiu para críticas sociais e políticas sombrias, especialmente na série "Pinturas Negras". É considerado um precursor da arte moderna pela expressividade e audácia de seus trabalhos.',
-    imagem: require('./assets/retrato6.jpg'),
-  },
-];
+export default function App() {
+  const [selectedArt, setSelectedArt] = useState(null);
 
-export default function ListaArtistas() {
   const [fontsLoaded] = useFonts({
-    'LongShot': require('./assets/fonts/Long_Shot.ttf'),
+    LongShot: require('./assets/fonts/Long_Shot.ttf'),
   });
 
   if (!fontsLoaded) {
-    return null;
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#ffffff" />
+      </View>
+    );
   }
 
+  const artworks = [
+    {
+      image: require('./assets/dali.jpg'),
+      title: 'A Persistência da Memória',
+      author: 'Salvador Dalí',
+      year: 1931,
+      material: 'Óleo sobre tela',
+      colors: 'Azul, marrom, dourado',
+      description:
+        'A Persistência da Memória é uma das obras mais icônicas de Salvador Dalí. Criada em 1931, representa relógios derretendo em uma paisagem desértica, simbolizando a relatividade do tempo. É um marco do surrealismo que desafia as percepções lógicas da realidade e do tempo.',
+    },
+    {
+      image: require('./assets/dali2.jpg'),
+      title: 'Paisagem Surrealista com Criança',
+      author: 'Salvador Dalí',
+      year: 1935,
+      material: 'Óleo sobre tela',
+      colors: 'Verde, bege, azul',
+      description:
+        'Nesta obra, Dalí combina elementos da infância com o mundo surreal, criando uma paisagem de sonho e mistério. O uso de cores suaves e figuras distorcidas reforça a atmosfera do subconsciente.',
+    },
+    {
+      image: require('./assets/goya.jpg'),
+      title: 'O Grande Bode',
+      author: 'Francisco Goya',
+      year: 1821,
+      material: 'Óleo sobre tela',
+      colors: 'Preto, marrom, bege',
+      description:
+        'Parte das “Pinturas Negras”, esta obra retrata uma figura satânica em um encontro sombrio. Goya aborda temas de medo e superstição com cores escuras e uma atmosfera opressiva.',
+    },
+    {
+      image: require('./assets/goya2.webp'),
+      title: 'Aparição Fantasmagórica',
+      author: 'Francisco Goya',
+      year: 1823,
+      material: 'Óleo sobre tela',
+      colors: 'Cinza, preto, tons de carne',
+      description:
+        'Nesta pintura, Goya explora figuras espectrais e o medo do desconhecido. A técnica e o uso do claro-escuro criam um clima de angústia e tensão emocional.',
+    },
+    {
+      image: require('./assets/goya3.jpg'),
+      title: 'Homem Rindo',
+      author: 'Francisco Goya',
+      year: 1820,
+      material: 'Óleo sobre tela',
+      colors: 'Preto, amarelo, branco',
+      description:
+        'Embora o sorriso aparente, esta obra transmite inquietação. Faz parte das obras mais obscuras de Goya, onde o riso pode ser interpretado como loucura ou desespero.',
+    },
+    {
+      image: require('./assets/monet.jpg'),
+      title: 'Pôr-do-sol em Veneza',
+      author: 'Claude Monet',
+      year: 1908,
+      material: 'Óleo sobre tela',
+      colors: 'Laranja, azul, lilás',
+      description:
+        'Esta obra de Claude Monet retrata a beleza do entardecer em Veneza com pinceladas suaves e tons vibrantes. A atmosfera tranquila e os reflexos da luz criam uma sensação de contemplação.',
+    },
+    {
+      image: require('./assets/monet2.jpg'),
+      title: 'Mulher com Sombrinha',
+      author: 'Claude Monet',
+      year: 1875,
+      material: 'Óleo sobre tela',
+      colors: 'Verde, branco, azul claro',
+      description:
+        'Retrato da esposa e filho de Monet em um dia ensolarado, essa obra é símbolo do Impressionismo. A luz natural e o vento no vestido trazem leveza e movimento à cena.',
+    },
+  ];
+
   return (
-    <ScrollView style={styles.container}>
-      {artistas.map((artista, index) => (
-        <View key={index} style={styles.card}>
-          <Image source={artista.imagem} style={styles.imagem} />
-          <Text style={styles.nome}>{artista.nome}</Text>
-          <Text style={styles.texto}><Text style={styles.label}>Nascimento e Morte: </Text>{artista.nascimento}</Text>
-          <Text style={styles.texto}><Text style={styles.label}>Movimento: </Text>{artista.movimento}</Text>
-          <Text style={styles.texto}><Text style={styles.label}>Técnica: </Text>{artista.tecnica}</Text>
-          <Text style={styles.texto}><Text style={styles.label}>Resumo: </Text>{artista.resumo}</Text>
-        </View>
-      ))}
-    </ScrollView>
+    <View style={{ flex: 1 }}>
+      <ScrollView style={styles.container}>
+        {artworks.map((art, index) => (
+          <TouchableOpacity
+            key={index}
+            onPress={() => setSelectedArt(art)}
+            style={styles.card}
+          >
+            <Image source={art.image} style={styles.image} resizeMode="cover" />
+            <View style={styles.info}>
+              <Text style={styles.title}>{art.title}</Text>
+              <Text style={styles.text}>Autor: {art.author}</Text>
+              <Text style={styles.text}>Ano: {art.year}</Text>
+              <Text style={styles.text}>Material: {art.material}</Text>
+            </View>
+          </TouchableOpacity>
+        ))}
+      </ScrollView>
+
+      {/* Modal */}
+      {selectedArt && (
+        <Modal
+          visible={true}
+          transparent={true}
+          animationType="fade"
+          onRequestClose={() => setSelectedArt(null)}
+        >
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContent}>
+              <Image source={selectedArt.image} style={styles.modalImage} resizeMode="cover" />
+              <Text style={styles.modalTitle}>{selectedArt.title}</Text>
+              <Text style={styles.modalText}>Autor: {selectedArt.author}</Text>
+              <Text style={styles.modalText}>Ano: {selectedArt.year}</Text>
+              <Text style={styles.modalText}>Material: {selectedArt.material}</Text>
+              <Text style={styles.modalText}>Cores principais: {selectedArt.colors}</Text>
+              <Text style={styles.modalDescription}>{selectedArt.description}</Text>
+              <Pressable onPress={() => setSelectedArt(null)} style={styles.closeButton}>
+                <Text style={styles.closeButtonText}>Fechar</Text>
+              </Pressable>
+            </View>
+          </View>
+        </Modal>
+      )}
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#1a1a1a',
-    padding: 16,
+    padding: 10,
+  },
+  loadingContainer: {
+    flex: 1,
+    backgroundColor: '#1a1a1a',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   card: {
+    flexDirection: 'row',
+    marginBottom: 20,
     backgroundColor: '#2a2a2a',
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 24,
-  },
-  imagem: {
-    width: '100%',
-    height: 250,
     borderRadius: 10,
-    resizeMode: 'cover',
+    overflow: 'hidden',
   },
-  nome: {
+  image: {
+    width: 130,
+    height: 130,
+  },
+  info: {
+    flex: 1,
+    padding: 10,
+    justifyContent: 'center',
+  },
+  title: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
     fontFamily: 'LongShot',
-    fontSize: 26,
-    color: '#ffffff',
-    marginTop: 12,
     marginBottom: 4,
   },
-  texto: {
-    color: '#cccccc',
-    fontSize: 16,
-    marginBottom: 6,
+  text: {
+    color: '#ccc',
+    fontSize: 14,
     fontFamily: 'LongShot',
   },
-  label: {
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.8)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  modalContent: {
+    backgroundColor: '#2a2a2a',
+    borderRadius: 10,
+    padding: 15,
+    alignItems: 'center',
+    width: '100%',
+  },
+  modalImage: {
+    width: 250,
+    height: 250,
+    borderRadius: 10,
+    marginBottom: 10,
+  },
+  modalTitle: {
+    color: '#fff',
+    fontSize: 20,
     fontWeight: 'bold',
-    color: '#ffffff',
+    fontFamily: 'LongShot',
+    marginBottom: 10,
+  },
+  modalText: {
+    color: '#ccc',
+    fontSize: 14,
+    fontFamily: 'LongShot',
+    marginBottom: 4,
+  },
+  modalDescription: {
+    color: '#aaa',
+    fontSize: 14,
+    fontFamily: 'LongShot',
+    marginTop: 10,
+    textAlign: 'justify',
+  },
+  closeButton: {
+    marginTop: 15,
+    backgroundColor: '#444',
+    paddingVertical: 8,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+  },
+  closeButtonText: {
+    color: '#fff',
+    fontSize: 14,
+    fontFamily: 'LongShot',
   },
 });
